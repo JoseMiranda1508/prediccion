@@ -1,2 +1,2 @@
 # prediccion
-El siguiente trabajo trata de predecir el trabajo en un periodo futuro que tendrá la M.I municipalidad de Guayaquil.
+El siguiente trabajo trata de predecir el trabajo en un periodo futuro que tendrá la M.I municipalidad de Guayaquil con el objetivo principal de saber cuando personal se debe de contratar para las fechas con mayor demanda de trabajo. Nos basamos en una de las 2 disciplinas de aálisis de datos que es el Aprendizaje Supervizado y este a su vez tiene otra metodologia que es la regreción.
