@@ -1,0 +1,107 @@
+%matplotlib inline
+import matplotlib.pyplot as plt
+import pandas as pd
+
+documentos = pd.read_csv('datos.csv', sep=";")
+
+print "Datos:"
+print documentos.head()
+
+import time
+from datetime import datetime
+from dateutil import parser
+from sklearn import preprocessing
+
+encoder_num_documento = preprocessing.LabelEncoder()
+documentos.num_documento = encoder_num_documento.fit_transform(documentos.num_documento)
+
+documentos['id_documento'] = documentos['num_documento']
+documentos.num_documento = encoder_num_documento.inverse_transform(documentos.num_documento)
+
+print documentos.head()
+print documentos[['id_documento','num_documento']]
+
+def datetime_to_int(dt_list):
+    ftr = [3600,60,1]
+    return [sum([a*b for a,b in zip(ftr, map(int,x.split(':')))]) for x in dt_list]
+
+hora_entrada = datetime_to_int(documentos['hora_de_entrada'])
+documentos['hora_de_entrada_n'] = hora_entrada
+documentos[['id_documento','num_documento','hora_de_entrada']].head()
+
+import numpy as np
+
+#Ploteo
+N = 50
+colors = np.random.rand(N)
+area = np.pi * (8 * 2**2 )
+plt.scatter(documentos['hora_de_entrada_n'], documentos['id_documento'], s=area, c=["red"], alpha=0.5)
+plt.xlabel('hora entrada')
+plt.ylabel('Numero de documento')
+plt.title('Hora Entrada vs Numero de Documento')
+plt.show()
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import linear_model, datasets
+from sklearn.cross_validation import train_test_split
+
+X = documentos[['hora_de_entrada_n']]
+Y = documentos['num_documento']
+
+#Partimos la data, una conjunto para el training y otro para el testing(33%)
+X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size=0.33)
+
+#Creamos el modelo
+model = linear_model.LogisticRegression(C=1e5, multi_class='multinomial', solver='lbfgs')
+
+#Ajustar el modelo segun los datos de entrenamiento.
+model.fit(X_train, Y_train)
+
+print "Score: ", model.score(X_test,Y_test)
+
+#Predecimos los valores con datos entrenados
+predictions = model.predict(X_test)
+
+indices = Y_test.index.values
+
+resultados = documentos[['hora_de_entrada', 'num_documento']].loc[indices]
+resultados["Prediccion"] = predictions
+
+#Volvemos de la variable numerica a categorica.
+resultados.Prediccion = encoder_num_documento.inverse_transform(resultados.Prediccion)
+
+
+print "\n>>>Resultados\n\n"
+resultados
+
+import urllib2
+import urllib
+import random
+import time
+
+def enviar(hora_de_entrada, num_documento, predecido):
+
+    data = {}
+    data["hora_de_entrada"] = str(hora_entrada)
+    data["num_documento"] = str(num_documento)
+    data["predecido"] = str(predecido)
+
+    parametros = urllib.urlencode(data)
+    url = 'http://openack.com/Projects/cloud/evaluacionA.php'
+    full_url = url + '?' + parametros
+
+    data = urllib2.urlopen(full_url)
+
+def main():
+    resultados.sort_values(by=['hora_de_entrada'], ascending=[True], inplace=True)
+
+    #print resultados.columns
+
+    for index, row in resultados.iterrows():
+        print row['hora_de_entrada'],row['num_documento'], row['Prediccion']
+        enviar(row['hora_de_entrada'],row['num_documento'], row['Prediccion'])
+        time.sleep(0.5)
+
+#main()
