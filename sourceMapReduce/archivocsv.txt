@@ -1,0 +1,68 @@
+//Clase usada para leer el archivo .csv
+package com.proymapreduce.file;
+import com.proymapreduce.entity.documentos;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import com.csvreader.CsvReader;
+/**
+ *
+ */
+public class archivocsv {   
+    public static List<documentos> documentos = new ArrayList<documentos>();
+    
+    public static void main(String[] args) {
+         // Prueba de lectura de archivo   
+        ReadingFile();
+        ShowFile();
+
+    }    
+
+    public static void ReadingFile(){
+
+        try {        
+        
+            CsvReader usuarios_import = new CsvReader("archivos/131135.csv");
+            usuarios_import.readHeaders();
+            while (usuarios_import.readRecord())
+            {
+                String cadena =  usuarios_import.get(0);
+                String registro [] = cadena.split ( ";");
+                
+                String documento = registro [0];
+                String fecha = registro[3];
+                
+                //int anio = 0;
+                int anio = Integer.parseInt(fecha.substring(6));
+                
+                String hora = registro [4];
+                hora = hora.replace(":", "");
+                int horanum = Integer.parseInt(hora);
+               
+                
+                String clase = registro [5];
+                double valor = Double.parseDouble(registro [6]);
+                documentos.add(new documentos(documento, fecha, hora, clase, valor, anio));    
+            }
+            usuarios_import.close();
+            
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }            
+    
+    }
+    
+    public static void ShowFile(){
+            for(documentos us : documentos){
+                System.out.println(us.getDocumento() + " : " + " "
+                + us.getFecha() + " - " + us.getHora() + " : " + us.getValor() + " : " + us.getAnio());
+                
+                
+            }
+        
+    }
+    
+}

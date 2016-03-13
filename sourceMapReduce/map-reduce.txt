@@ -1,0 +1,191 @@
+//Clase que implementa la codificacion en  map-reduce
+
+package com.proymapreduce.action;
+import com.csvreader.CsvReader;
+import com.proymapreduce.entity.documentos;
+import com.proymapreduce.entity.tabla;
+import static com.proymapreduce.file.archivocsv.ReadingFile;
+import static com.proymapreduce.file.archivocsv.ShowFile;
+import com.proymapreduce.form.mapreduceForm;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+
+
+public class mapreduceAction extends org.apache.struts.action.Action {
+    public static List<documentos> documentos = new ArrayList<documentos>();
+    int contA1=0,contA2=0, contA3=0,contA4=0,contA5=0,contA6=0, contA7=0,contA8=0,contA9=0;
+    int contB1=0,contB2=0, contB3=0,contB4=0,contB5=0,contB6=0, contB7=0,contB8=0,contB9=0;   
+    int sumaA = 0; 
+    int sumaB = 0;     
+    ArrayList listado = new ArrayList();
+           
+   @Override
+    public ActionForward execute(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+        int pares=9;
+        tabla tabla = null;
+        mapreduceForm unaForma = (mapreduceForm)form;
+        CsvReader datos_import = new CsvReader("C:\\archivos\\131135.csv"); // RUTA DEL ARCHIVO 
+        map(datos_import);
+        reduce(pares,tabla);
+        emit(request);
+        return mapping.findForward("Mapreduce");
+    }
+    
+    public void map(CsvReader datos_import){
+        try{
+            contA1=0;contA2=0; contA3=0;contA4=0;contA5=0;contA6=0; contA7=0;contA8=0;contA9=0;
+            contB1=0;contB2=0; contB3=0;contB4=0;contB5=0;contB6=0; contB7=0;contB8=0;contB9=0;                 
+            datos_import.readHeaders();
+            while (datos_import.readRecord())
+            {
+                String cadena =  datos_import.get(0); //obtener cadena del archivo por cada fila
+                String registro [] = cadena.split ( ";"); //convertir cadena en arreglo
+
+                String fecha = registro[3]; //Obtener el campo fecha
+                int anio = Integer.parseInt(fecha.substring(6)); //sacar el año
+                String hora = registro [4]; //Obtener la hora
+                hora = hora.replace(":", "");
+                int horanum = Integer.parseInt(hora);// convertir la hora en numero
+               
+                //Obtener pares 
+                if(horanum >= 80000 && horanum <= 85959 ){if(anio==2014){contA1++;}else{contB1++;}
+                }else{if(horanum >= 90000 && horanum <= 95959 ){if(anio==2014){contA2++;}else{contB2++;}
+                }else{if(horanum >= 100000 && horanum <= 105959 ){if(anio==2014){contA3++;}else{contB3++;}
+                }else{if(horanum >= 110000 && horanum <= 115959 ){if(anio==2014){contA4++;}else{contB4++;}
+                }else{if(horanum >= 120000 && horanum <= 125959 ){if(anio==2014){contA5++;}else{contB5++;}
+                }else{if(horanum >= 130000 && horanum <= 135959 ){if(anio==2014){contA6++;}else{contB6++;}
+                }else{if(horanum >= 140000 && horanum <= 145959 ){if(anio==2014){contA7++;}else{contB7++;}                    
+                }else{if(horanum >= 150000 && horanum <= 155959 ){if(anio==2014){contA8++;}else{contB8++;}
+                }else{if(horanum >= 160000 && horanum <= 170000 ){if(anio==2014){contA9++;}else{contB9++;}
+                }}}}}}}}}
+            } 
+            sumaA = contA1 + contA2 +contA3 + contA4 + contA5 + contA6 + contA7 + contA8 + contA9; 
+            sumaB = contB1 + contB2 +contB3 + contB4 + contB5 + contB6 + contB7 + contB8 + contB9;             
+            datos_import.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }              
+    }
+   
+    
+    /*
+    Metodo reduce segun horarios por año 2014 y 2015 extraidos segun map del archivo .csv
+    */
+    public void reduce(int pares, tabla tabla){
+            int cont=1;
+            double variacion=0.01D;
+            int cifras = (int) Math.pow(10, 2);
+            while(cont<=pares){
+                tabla = new tabla();
+                if(cont==1){
+                    tabla.setDesde("8:00:00");
+                    tabla.setHasta("8:59:59");
+                    tabla.setAnio2014(contA1);
+                    tabla.setAnio2015(contB1); 
+                    variacion = contB1*1.0/contA1;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla.setVariacion((variacion)*100);
+                    tabla.setAnio2016(getByDecimals((contB1+(contB1*variacion)),2));                    
+                }
+                if(cont==2){tabla.setDesde("9:00:00");
+                    tabla.setHasta("9:59:59");
+                    tabla.setAnio2014(contA2);
+                    tabla.setAnio2015(contB2);
+                    variacion = contB2*1.0/contA2;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla.setVariacion((variacion)*100);
+                    tabla.setAnio2016(getByDecimals((contB2+(contB2*variacion)),2));      
+                }
+                if(cont==3){tabla.setDesde("10:00:00");
+                    tabla.setHasta("10:59:59");
+                    tabla.setAnio2014(contA3);
+                    tabla.setAnio2015(contB3);
+                    variacion = contB3*1.0/contA3;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla.setVariacion((variacion)*100);
+                    tabla.setAnio2016(getByDecimals((contB3+(contB3*variacion)),2));      
+                }
+                if(cont==4){tabla.setDesde("11:00:00");
+                    tabla.setHasta("11:59:59");
+                    tabla.setAnio2014(contA4);
+                    tabla.setAnio2015(contB4);
+                    variacion = contB4*1.0/contA4;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla.setVariacion((variacion)*100);
+                    tabla.setAnio2016(getByDecimals((contB4+(contB4*variacion)),2));      
+                }
+                if(cont==5){tabla.setDesde("12:00:00");
+                    tabla.setHasta("12:59:59");
+                    tabla.setAnio2014(contA5);
+                    tabla.setAnio2015(contB5);
+                    variacion = contB5*1.0/contA5;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla.setVariacion((variacion)*100);
+                    tabla.setAnio2016(getByDecimals((contB5+(contB5*variacion)),2));      
+                }
+                if(cont==6){tabla.setDesde("13:00:00");
+                    tabla.setHasta("13:59:59");
+                    tabla.setAnio2014(contA6);
+                    tabla.setAnio2015(contB6);
+                    variacion = contB6*1.0/contA6;
+                    variacion =  getByDecimals(variacion,4);  
+                    tabla.setVariacion((variacion-1)*100);
+                    tabla.setAnio2016((contB6-contA6)*tabla.getVariacion());   
+                }
+                if(cont==7){tabla.setDesde("14:00:00");
+                    tabla.setHasta("14:59:59");
+                    tabla.setAnio2014(contA7);
+                    tabla.setAnio2015(contB7);
+                    variacion = contB7*1.0/contA7;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla.setVariacion((variacion)*100);
+                    tabla.setAnio2016(getByDecimals((contB7+(contB7*variacion)),2));      
+                }
+                if(cont==8){tabla.setDesde("15:00:00");
+                    tabla.setHasta("15:59:59");
+                    tabla.setAnio2014(contA8);
+                    tabla.setAnio2015(contB8);
+                    variacion = contB8*1.0/contA8;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla.setVariacion((variacion)*100);
+                    tabla.setAnio2016(getByDecimals((contB8+(contB8*variacion)),2));      
+                }
+                if(cont==9){tabla.setDesde("16:00:00");
+                    tabla.setHasta("17:00:00");
+                    tabla.setAnio2014(contA9);
+                    tabla.setAnio2015(contB9);
+                    variacion = contB9*1.0/contA9;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla.setVariacion((variacion)*100);
+                    tabla.setAnio2016(getByDecimals((contB9+(contB9*variacion)),2));      
+                }
+                listado.add(tabla);
+                cont++;
+            }
+    }
+    
+
+    
+    public void emit(HttpServletRequest request){
+        request.getSession().setAttribute("listado", listado);
+    }
+    
+    public static double getByDecimals(double valor, int decimals) {
+        int cifras = (int) Math.pow(10, decimals);
+        return Math.rint(valor * cifras) / cifras;
+    }    
+    
+}
