@@ -1,107 +1,155 @@
-%matplotlib inline
-import matplotlib.pyplot as plt
-import pandas as pd
 
-documentos = pd.read_csv('datos.csv', sep=";")
+public void normal(CsvReader datos_import){
+        try{
+            int contA1=0;int contA2=0;int contA3=0;int contA4=0;int contA5=0;int contA6=0; int contA7=0;int contA8=0;int contA9=0;
+            int contB1=0;int contB2=0;int contB3=0;int contB4=0;int contB5=0;int contB6=0; int contB7=0;int contB8=0;int contB9=0; 
+            double variacion=0.01D;
 
-print "Datos:"
-print documentos.head()
+            datos_import.readHeaders();
+            while (datos_import.readRecord())
+            {
+                String cadena =  datos_import.get(0); 
+                String registro [] = cadena.split ( ";"); 
+                String fecha = registro[3]; 
+                int anio = Integer.parseInt(fecha.substring(6));
+                String hora = registro [4]; 
+                hora = hora.replace(":", "");
+                int horanum = Integer.parseInt(hora);
+                //Obtener pares 
+                if(horanum >= 80000 && horanum <= 85959 ){
+                    if(anio==2014){contA1++;}else{contB1++;}
+                   
+                }else{if(horanum >= 90000 && horanum <= 95959 ){
+                    if(anio==2014){contA2++;}else{contB2++;}
+                     
+                }else{if(horanum >= 100000 && horanum <= 105959 ){
+                    if(anio==2014){contA3++;}else{contB3++;}
+                     
+                }else{if(horanum >= 110000 && horanum <= 115959 ){
+                    if(anio==2014){contA4++;}else{contB4++;}
+ 
+                }else{if(horanum >= 120000 && horanum <= 125959 ){
+                    if(anio==2014){contA5++;}else{contB5++;}
+   
+                }else{if(horanum >= 130000 && horanum <= 135959 ){
+                    if(anio==2014){contA6++;}else{contB6++;}
 
-import time
-from datetime import datetime
-from dateutil import parser
-from sklearn import preprocessing
+                }else{if(horanum >= 140000 && horanum <= 145959 ){
+                    if(anio==2014){contA7++;}else{contB7++;}       
+ 
+                }else{if(horanum >= 150000 && horanum <= 155959 ){
+                    if(anio==2014){contA8++;}else{contB8++;}
+ 
+                }else{if(horanum >= 160000 && horanum <= 170000 ){
+                    if(anio==2014){contA9++;}else{contB9++;}
+    
+                }}}}}}}}}
 
-encoder_num_documento = preprocessing.LabelEncoder()
-documentos.num_documento = encoder_num_documento.fit_transform(documentos.num_documento)
-
-documentos['id_documento'] = documentos['num_documento']
-documentos.num_documento = encoder_num_documento.inverse_transform(documentos.num_documento)
-
-print documentos.head()
-print documentos[['id_documento','num_documento']]
-
-def datetime_to_int(dt_list):
-    ftr = [3600,60,1]
-    return [sum([a*b for a,b in zip(ftr, map(int,x.split(':')))]) for x in dt_list]
-
-hora_entrada = datetime_to_int(documentos['hora_de_entrada'])
-documentos['hora_de_entrada_n'] = hora_entrada
-documentos[['id_documento','num_documento','hora_de_entrada']].head()
-
-import numpy as np
-
-#Ploteo
-N = 50
-colors = np.random.rand(N)
-area = np.pi * (8 * 2**2 )
-plt.scatter(documentos['hora_de_entrada_n'], documentos['id_documento'], s=area, c=["red"], alpha=0.5)
-plt.xlabel('hora entrada')
-plt.ylabel('Numero de documento')
-plt.title('Hora Entrada vs Numero de Documento')
-plt.show()
-
-
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn import linear_model, datasets
-from sklearn.cross_validation import train_test_split
-
-X = documentos[['hora_de_entrada_n']]
-Y = documentos['num_documento']
-
-#Partimos la data, una conjunto para el training y otro para el testing(33%)
-X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size=0.33)
-
-#Creamos el modelo
-model = linear_model.LogisticRegression(C=1e5, multi_class='multinomial', solver='lbfgs')
-
-#Ajustar el modelo segun los datos de entrenamiento.
-model.fit(X_train, Y_train)
-
-print "Score: ", model.score(X_test,Y_test)
-
-#Predecimos los valores con datos entrenados
-predictions = model.predict(X_test)
-
-indices = Y_test.index.values
-
-resultados = documentos[['hora_de_entrada', 'num_documento']].loc[indices]
-resultados["Prediccion"] = predictions
-
-#Volvemos de la variable numerica a categorica.
-resultados.Prediccion = encoder_num_documento.inverse_transform(resultados.Prediccion)
-
-
-print "\n>>>Resultados\n\n"
-resultados
-
-import urllib2
-import urllib
-import random
-import time
-
-def enviar(hora_de_entrada, num_documento, predecido):
-
-    data = {}
-    data["hora_de_entrada"] = str(hora_entrada)
-    data["num_documento"] = str(num_documento)
-    data["predecido"] = str(predecido)
-
-    parametros = urllib.urlencode(data)
-    url = 'http://openack.com/Projects/cloud/evaluacionA.php'
-    full_url = url + '?' + parametros
-
-    data = urllib2.urlopen(full_url)
-
-def main():
-    resultados.sort_values(by=['hora_de_entrada'], ascending=[True], inplace=True)
-
-    #print resultados.columns
-
-    for index, row in resultados.iterrows():
-        print row['hora_de_entrada'],row['num_documento'], row['Prediccion']
-        enviar(row['hora_de_entrada'],row['num_documento'], row['Prediccion'])
-        time.sleep(0.5)
-
-#main()
+            }
+            
+            int cont=1;
+            int pares=9;
+            double variacion2=0.01D;
+            tabla tabla1 = new tabla();
+            listado2 = new ArrayList();            
+            while(cont<=pares){
+                tabla1 = new tabla();
+                if(cont==1){
+                    tabla1.setDesde("8:00:00");
+                    tabla1.setHasta("8:59:59");
+                    tabla1.setAnio2014(contA1);
+                    tabla1.setAnio2015(contB1); 
+                    variacion = contB1*1.0/contA1;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla1.setVariacion((variacion)*100);
+                    tabla1.setAnio2016(getByDecimals((contB1+(contB1*variacion)),0));                    
+                }
+                if(cont==2){tabla1.setDesde("9:00:00");
+                    tabla1.setHasta("9:59:59");
+                    tabla1.setAnio2014(contA2);
+                    tabla1.setAnio2015(contB2);
+                    variacion = contB2*1.0/contA2;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla1.setVariacion((variacion)*100);
+                    tabla1.setAnio2016(getByDecimals((contB2+(contB2*variacion)),0));      
+                }
+                if(cont==3){tabla1.setDesde("10:00:00");
+                    tabla1.setHasta("10:59:59");
+                    tabla1.setAnio2014(contA3);
+                    tabla1.setAnio2015(contB3);
+                    variacion = contB3*1.0/contA3;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla1.setVariacion((variacion)*100);
+                    tabla1.setAnio2016(getByDecimals((contB3+(contB3*variacion)),0));      
+                }
+                if(cont==4){tabla1.setDesde("11:00:00");
+                    tabla1.setHasta("11:59:59");
+                    tabla1.setAnio2014(contA4);
+                    tabla1.setAnio2015(contB4);
+                    variacion = contB4*1.0/contA4;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla1.setVariacion((variacion)*100);
+                    tabla1.setAnio2016(getByDecimals((contB4+(contB4*variacion)),0));       
+                }
+                if(cont==5){tabla1.setDesde("12:00:00");
+                    tabla1.setHasta("12:59:59");
+                    tabla1.setAnio2014(contA5);
+                    tabla1.setAnio2015(contB5);
+                    variacion = contB4*1.0/contA4;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla1.setVariacion((variacion)*100);
+                    tabla1.setAnio2016(getByDecimals((contB4+(contB4*variacion)),0));    
+                }
+                if(cont==6){tabla1.setDesde("13:00:00");
+                    tabla1.setHasta("13:59:59");
+                    tabla1.setAnio2014(contA6);
+                    tabla1.setAnio2015(contB6);
+                    variacion = contB6*1.0/contA6;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla1.setVariacion((variacion)*100);
+                    tabla1.setAnio2016(getByDecimals((contB6+(contB6*variacion)),0));    
+                }
+                if(cont==7){tabla1.setDesde("14:00:00");
+                    tabla1.setHasta("14:59:59");
+                    tabla1.setAnio2014(contA7);
+                    tabla1.setAnio2015(contB7);
+                    variacion = contB7*1.0/contA7;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla1.setVariacion((variacion)*100);
+                    tabla1.setAnio2016(getByDecimals((contB7+(contB7*variacion)),0));       
+                }
+                if(cont==8){tabla1.setDesde("15:00:00");
+                    tabla1.setHasta("15:59:59");
+                    tabla1.setAnio2014(contA8);
+                    tabla1.setAnio2015(contB8);
+                    variacion = contB8*1.0/contA8;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla1.setVariacion((variacion)*100);
+                    tabla1.setAnio2016(getByDecimals((contB8+(contB8*variacion)),0));       
+                }
+                if(cont==9){tabla1.setDesde("16:00:00");
+                    tabla1.setHasta("17:00:00");
+                    tabla1.setAnio2014(contA9);
+                    tabla1.setAnio2015(contB9);
+                    variacion = contB9*1.0/contA9;
+                    variacion =  getByDecimals(variacion-1,4);  
+                    tabla1.setVariacion((variacion)*100);
+                    tabla1.setAnio2016(getByDecimals((contB9+(contB9*variacion)),0));       
+                }
+                listado2.add(tabla1);
+                cont++;
+            
+            
+            } 
+            int sumaA = contA1 + contA2 +contA3 + contA4 + contA5 + contA6 + contA7 + contA8 + contA9; 
+            int sumaB = contB1 + contB2 +contB3 + contB4 + contB5 + contB6 + contB7 + contB8 + contB9;             
+            datos_import.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }              
+    
+    
+    
+    }#main()
